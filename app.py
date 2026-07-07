@@ -5,6 +5,7 @@ from db import init_db
 from auth import auth_bp
 from child_routes import child_bp
 from parent_routes import parent_bp
+from pet_routes import pet_bp
 
 def create_app():
     app = Flask(__name__)
@@ -22,6 +23,7 @@ def create_app():
     app.register_blueprint(auth_bp)
     app.register_blueprint(parent_bp)
     app.register_blueprint(child_bp)
+    app.register_blueprint(pet_bp)
 
     return app
 

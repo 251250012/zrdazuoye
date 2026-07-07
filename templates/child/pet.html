@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}我的宠物 - 小小动物园{% endblock %}
+{% block content %}
+<div class="child-header">
+    <h1>🐾 我的宠物</h1>
+    <div class="coin-display">🪙 {{ coins }} 金币</div>
+</div>
+
+{% if pet %}
+<div class="pet-main">
+    <div class="pet-card">
+        <div class="pet-emoji">
+            {% if pet.stage == 'egg' %}🥚{% elif pet.stage == 'baby' %}🐣{% else %}🐾{% endif %}
+        </div>
+        <h2>{{ pet.name }}</h2>
+        <p class="pet-type">{{ pet.type }} · {{ stage_names[pet.stage] }}</p>
+        <div class="pet-stats">
+            <span>🍖 喂食: {{ pet.feed_count }}/23</span>
+            <span>🧸 玩耍: {{ pet.play_count }}/10</span>
+            <span>🤚 抚摸: {{ pet.pet_count }}</span>
+        </div>
+    </div>
+
+    <div class="pet-interactions">
+        <form method="POST" action="{{ url_for('interact_pet', action='feed') }}">
+            <button class="interact-btn">🍖 喂食 (50金币)</button>
+        </form>
+        <form method="POST" action="{{ url_for('interact_pet', action='play') }}">
+            <button class="interact-btn">🧸 玩耍 (80金币)</button>
+        </form>
+        <form method="POST" action="{{ url_for('interact_pet', action='pet') }}">
+            <button class="interact-btn">🤚 摸一摸</button>
+        </form>
+        {% if pet.stage == 'adult' %}
+        <form method="POST" action="{{ url_for('release_pet_route') }}" onsubmit="return confirm('确定要让{{ pet.name }}去远方冒险吗？')">
+            <button class="interact-btn release">🌸 放生</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+{% else %}
+<div class="adopt-section">
+    <h2>领养一只新宠物</h2>
+    <form method="POST" action="{{ url_for('adopt_pet') }}">
+        <div class="form-group">
+            <label>选择宠物</label>
+            <select name="pet_type" required>
+                {% for pt in pet_types %}
+                <option value="{{ pt }}">{{ pt }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label>起个名字</label>
+            <input type="text" name="name" value="宝贝" required>
+        </div>
+        <button type="submit" class="btn-primary">领养！</button>
+    </form>
+</div>
+{% endif %}
+
+{% if all_pets %}
+<div class="past-pets">
+    <h3>曾经的小伙伴</h3>
+    {% for p in all_pets %}
+    {% if not p.is_alive %}
+    <span class="past-pet">{{ p.type }} {{ p.name }}</span>
+    {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

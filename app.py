@@ -1,9 +1,20 @@
+import os
 from flask import Flask
 from config import Config
+from db import init_db
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+
+    # 确保上传目录存在
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+    # 首次运行初始化数据库
+    if not os.path.exists(app.config['DATABASE']):
+        with app.app_context():
+            init_db()
+
     return app
 
 if __name__ == '__main__':

@@ -82,8 +82,13 @@ def child_redeem(activity_id):
 @child_bp.route('/child/badges')
 @login_required
 def child_badges():
-    from badge_checker import BADGE_DEFINITIONS
+    from badge_checker import BADGE_DEFINITIONS, check_badges
     child_id = session['user_id']
+    # 先检查是否有新获得勋章
+    new_badges = check_badges(child_id)
+    if new_badges:
+        for b in new_badges:
+            flash(f'🎉 获得勋章：{BADGE_DEFINITIONS[b]["icon"]} {BADGE_DEFINITIONS[b]["name"]}！', 'success')
     earned = get_child_badges(child_id)
     earned_types = set(b['badge_type'] for b in earned)
     return render_template('child/badges.html', badges=BADGE_DEFINITIONS, earned_badges=earned_types)

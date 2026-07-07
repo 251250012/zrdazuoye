@@ -1,4 +1,4 @@
-from models import award_badge, get_checkins_by_child, get_checkins_in_range
+from models import award_badge, get_checkins_by_child
 from datetime import datetime, timedelta
 
 BADGE_DEFINITIONS = {

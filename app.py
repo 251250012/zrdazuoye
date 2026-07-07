@@ -2,6 +2,7 @@ import os
 from flask import Flask
 from config import Config
 from db import init_db
+from auth import auth_bp
 
 def create_app():
     app = Flask(__name__)
@@ -14,6 +15,9 @@ def create_app():
     if not os.path.exists(app.config['DATABASE']):
         with app.app_context():
             init_db()
+
+    # 注册蓝图
+    app.register_blueprint(auth_bp)
 
     return app
 

@@ -115,6 +115,10 @@ def get_all_activities():
     db = get_db()
     return db.execute('SELECT * FROM activity WHERE active = 1 ORDER BY id').fetchall()
 
+def get_activity_by_id(activity_id):
+    db = get_db()
+    return db.execute('SELECT * FROM activity WHERE id = ?', (activity_id,)).fetchone()
+
 def update_activity(activity_id, name, cost_per_unit, unit_type, need_photo):
     db = get_db()
     db.execute(

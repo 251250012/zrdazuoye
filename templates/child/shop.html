@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}积分商城 - 小小动物园{% endblock %}
+{% block content %}
+<div class="child-header">
+    <h1>🎮 积分商城</h1>
+    <div class="coin-display">⭐ {{ total_score }} 积分 | 🪙 {{ coins }} 金币</div>
+</div>
+
+<div class="shop-grid">
+    {% for activity in activities %}
+    <div class="shop-card">
+        <h3>{{ activity.name }}</h3>
+        <p class="price">{{ activity.cost_per_unit }} 积分/{{ activity.unit_type }}</p>
+        {% if activity.need_photo %}
+        <span class="photo-tag">📸</span>
+        {% endif %}
+        <form method="POST" action="{{ url_for('child.child_redeem', activity_id=activity.id) }}">
+            {% if activity.unit_type == 'minute' %}
+            <div class="quantity-select">
+                <input type="number" name="quantity" value="10" min="1" max="120">
+                <span>分钟</span>
+            </div>
+            {% endif %}
+            <button type="submit" class="btn-primary">兑换</button>
+        </form>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="history-section">
+    <h2>📋 兑换记录</h2>
+    {% for r in redemptions %}
+    <div class="history-item">
+        <span>{{ r.activity_name }}</span>
+        <span>-{{ r.total_cost }} 积分</span>
+        <span class="status {{ r.status }}">{{ r.status }}</span>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

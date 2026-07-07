@@ -243,7 +243,9 @@ def math_question():
 @login_required
 def math_answer():
     data = request.get_json()
-    correct = data.get('answer') == data.get('user_answer')
+    if not data or 'answer' not in data or 'user_answer' not in data:
+        return jsonify({'correct': False, 'error': 'missing_data'})
+    correct = data['answer'] == data['user_answer']
     if correct and data.get('pet_id'):
         update_pet_math_win(data['pet_id'])
         # 宠物额外成长

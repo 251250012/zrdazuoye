@@ -109,3 +109,33 @@ def parent_report():
         if report:
             reports.append({'child': child, 'report': report})
     return render_template('parent/report.html', reports=reports)
+
+
+@parent_bp.route('/parent/settings', methods=['GET', 'POST'])
+@parent_required
+def parent_settings():
+    children = get_all_children()
+
+    if request.method == 'POST':
+        action = request.form.get('action')
+        if action == 'change_password':
+            user_id = int(request.form['user_id'])
+            new_password = request.form['new_password']
+            update_password(user_id, new_password)
+            flash('密码修改成功', 'success')
+        elif action == 'create_child':
+            username = request.form['username']
+            password = request.form['password']
+            display_name = request.form['display_name']
+            grade = int(request.form.get('grade', 1))
+            create_user(username, password, 'child', display_name, grade)
+            flash(f'孩子账号 {display_name} 创建成功', 'success')
+        elif action == 'change_grade':
+            child_id = int(request.form['child_id'])
+            grade = int(request.form['grade'])
+            update_user_grade(child_id, grade)
+            flash('年级设置已更新', 'success')
+        return redirect(url_for('parent.parent_settings'))
+
+    return render_template('parent/settings.html', children=children,
+                         grades=['幼儿园', '一年级', '二年级', '三年级'])

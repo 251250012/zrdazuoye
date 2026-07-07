@@ -132,3 +132,11 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f5f5f5; colo
 .progress-bar { height: 12px; background: #e0e0e0; border-radius: 6px; margin: 10px 0; overflow: hidden; }
 .progress-fill { height: 100%; background: linear-gradient(90deg, #ff6b35, #ffd700); border-radius: 6px; transition: width 0.5s; }
 .wish-done { color: #28a745; font-weight: bold; }
+
+/* 设置页面 */
+.settings-section { background: white; border-radius: 12px; padding: 20px; margin: 20px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.settings-form { max-width: 400px; }
+.child-settings-card { background: #f9f9f9; border-radius: 8px; padding: 15px; margin: 10px 0; }
+.inline-form { display: flex; align-items: center; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
+.inline-form input[type="password"] { width: 150px; padding: 5px; border: 1px solid #ddd; border-radius: 6px; }
+.inline-form select { padding: 5px; border: 1px solid #ddd; border-radius: 6px; }

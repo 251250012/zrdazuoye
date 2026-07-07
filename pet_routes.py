@@ -1,8 +1,9 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
+import random
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from auth import login_required
 from models import (
     get_active_pet, create_pet, update_pet_feed, update_pet_play,
-    update_pet_pet, update_pet_math_win, update_pet_stage,
+    update_pet_pet, update_pet_stage,
     release_pet, get_all_pets, spend_coins, get_coin_balance
 )
 
@@ -60,6 +61,11 @@ def adopt_pet():
     if active:
         flash('已经有宠物了，养大后才能领新的', 'error')
         return redirect(url_for('child_pet'))
+    all_pets = get_all_pets(child_id)
+    released_count = sum(1 for p in all_pets if not p['is_alive'])
+    if released_count >= 5:
+        flash('已经养大 5 只宠物了，动物园满了！', 'error')
+        return redirect(url_for('child_pet'))
     pet_type = request.form.get('pet_type')
     if pet_type not in PET_TYPES:
         flash('请选择一种宠物', 'error')
@@ -72,6 +78,11 @@ def adopt_pet():
 @pet_bp.route('/child/pet/interact/<action>', methods=['POST'])
 @login_required
 def interact_pet(action):
+    VALID_ACTIONS = ['feed', 'play', 'pet']
+    if action not in VALID_ACTIONS:
+        flash('无效操作', 'error')
+        return redirect(url_for('child_pet'))
+
     child_id = session['user_id']
     pet = get_active_pet(child_id)
     if not pet:
@@ -85,7 +96,6 @@ def interact_pet(action):
         flash('金币不够啦，多做任务赚金币吧！', 'error')
         return redirect(url_for('child_pet'))
 
-    import random
     reaction = random.choice(PET_REACTIONS[pet['type']][action])
 
     if action == 'feed':

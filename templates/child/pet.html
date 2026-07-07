@@ -15,7 +15,7 @@
         <h2>{{ pet.name }}</h2>
         <p class="pet-type">{{ pet.type }} · {{ stage_names[pet.stage] }}</p>
         <div class="pet-stats">
-            <span>🍖 喂食: {{ pet.feed_count }}/23</span>
+            <span>🍖 喂食: {{ pet.feed_count }}/{% if pet.stage == 'egg' %}8{% else %}23{% endif %}</span>
             <span>🧸 玩耍: {{ pet.play_count }}/10</span>
             <span>🤚 抚摸: {{ pet.pet_count }}</span>
         </div>

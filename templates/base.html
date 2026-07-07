@@ -13,16 +13,16 @@
             <span class="nav-title">🐾 小小动物园</span>
             <div class="nav-links">
                 {% if session.get('role') == 'parent' %}
-                    <a href="{{ url_for('parent_dashboard') }}">首页</a>
-                    <a href="{{ url_for('parent_tasks') }}">任务管理</a>
-                    <a href="{{ url_for('parent_activities') }}">活动管理</a>
-                    <a href="{{ url_for('parent_settings') }}">设置</a>
+                    <a href="{{ url_for('parent.parent_dashboard') }}">首页</a>
+                    <a href="{{ url_for('parent.parent_tasks') }}">任务管理</a>
+                    <a href="{{ url_for('parent.parent_activities') }}">活动管理</a>
+                    <a href="{{ url_for('parent.parent_settings') }}">设置</a>
                 {% else %}
-                    <a href="{{ url_for('child_dashboard') }}">首页</a>
-                    <a href="{{ url_for('child_shop') }}">商城</a>
-                    <a href="{{ url_for('child_pet') }}">宠物</a>
-                    <a href="{{ url_for('child_badges') }}">勋章</a>
-                    <a href="{{ url_for('child_wishes') }}">心愿</a>
+                    <a href="{{ url_for('child.child_dashboard') }}">首页</a>
+                    <a href="{{ url_for('child.child_shop') }}">商城</a>
+                    <a href="{{ url_for('child.child_pet') }}">宠物</a>
+                    <a href="{{ url_for('child.child_badges') }}">勋章</a>
+                    <a href="{{ url_for('child.child_wishes') }}">心愿</a>
                 {% endif %}
                 <a href="{{ url_for('auth.logout') }}">退出</a>
             </div>

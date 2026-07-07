@@ -17,7 +17,7 @@ child_bp = Blueprint('child', __name__)
 @login_required
 def child_dashboard():
     if session.get('role') != 'child':
-        return redirect(url_for('parent_dashboard'))
+        return redirect(url_for('parent.parent_dashboard'))
     tasks = get_all_tasks()
     today = datetime.now().strftime('%Y-%m-%d')
     child_id = session['user_id']
@@ -36,4 +36,4 @@ def child_checkin(task_id):
     result = calculate_blind_score(task_id, child_id)
     if result and 'error' in result:
         flash(result['error'], 'error')
-    return redirect(url_for('child_dashboard'))
+    return redirect(url_for('child.child_dashboard'))

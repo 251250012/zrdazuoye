@@ -147,6 +147,16 @@ def get_redemptions_by_child(child_id):
         (child_id,)
     ).fetchall()
 
+def get_all_redemptions():
+    db = get_db()
+    return db.execute(
+        '''SELECT r.*, a.name as activity_name, a.need_photo, u.display_name as child_name
+           FROM redemption r
+           JOIN activity a ON r.activity_id = a.id
+           JOIN user u ON r.child_id = u.id
+           ORDER BY r.created_at DESC'''
+    ).fetchall()
+
 def update_redemption_photo(redemption_id, photo_path):
     db = get_db()
     db.execute(

@@ -14,7 +14,7 @@
             <div class="task-done">✅ 已完成</div>
         {% else %}
             <div class="task-mystery">？</div>
-            <form method="POST" action="{{ url_for('child_checkin', task_id=task.id) }}">
+            <form method="POST" action="{{ url_for('child.child_checkin', task_id=task.id) }}">
                 <button type="submit" class="btn-checkin">打卡</button>
             </form>
         {% endif %}

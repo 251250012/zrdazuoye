@@ -16,9 +16,9 @@ def login():
             session['role'] = user['role']
             session['display_name'] = user['display_name']
             if user['role'] == 'parent':
-                return redirect(url_for('parent_dashboard'))
+                return redirect(url_for('parent.parent_dashboard'))
             else:
-                return redirect(url_for('child_dashboard'))
+                return redirect(url_for('child.child_dashboard'))
         flash('用户名或密码错误', 'error')
     # 检查是否有管理员账号
     show_setup = get_user_by_username('admin') is None

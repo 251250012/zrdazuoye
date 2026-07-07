@@ -77,4 +77,13 @@ def child_redeem(activity_id):
 
     create_redemption(activity_id, child_id, quantity, total_cost)
     flash(f'🎉 兑换成功！消耗了 {total_cost} 积分', 'success')
-    return redirect(url_for('child_shop'))
+    return redirect(url_for('child.child_shop'))
+
+@child_bp.route('/child/badges')
+@login_required
+def child_badges():
+    from badge_checker import BADGE_DEFINITIONS
+    child_id = session['user_id']
+    earned = get_child_badges(child_id)
+    earned_types = set(b['badge_type'] for b in earned)
+    return render_template('child/badges.html', badges=BADGE_DEFINITIONS, earned_badges=earned_types)

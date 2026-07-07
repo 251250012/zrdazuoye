@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}我的勋章 - 小小动物园{% endblock %}
+{% block content %}
+<h1>🏆 我的勋章墙</h1>
+<div class="badge-grid">
+    {% for key, badge in badges.items() %}
+    <div class="badge-card {% if key in earned_badges %}earned{% else %}locked{% endif %}">
+        <div class="badge-icon">{{ badge.icon if key in earned_badges else '🔒' }}</div>
+        <div class="badge-name">{{ badge.name }}</div>
+        <div class="badge-desc">{{ badge.desc }}</div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -107,3 +107,12 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f5f5f5; colo
 .math-result.correct { background: #d4edda; color: #155724; }
 .math-result.wrong { background: #f8d7da; color: #721c24; }
 .grade-info { color: #666; margin-bottom: 10px; }
+
+/* 勋章系统 */
+.badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-top: 20px; }
+.badge-card { background: white; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.badge-card.earned { border: 2px solid #ffd700; }
+.badge-card.locked { opacity: 0.5; }
+.badge-icon { font-size: 2.5em; margin-bottom: 8px; }
+.badge-name { font-weight: bold; margin-bottom: 5px; }
+.badge-desc { font-size: 0.8em; color: #777; }

@@ -8,7 +8,7 @@ from models import (
     create_redemption, get_user_by_id, create_pet, update_pet_feed,
     update_pet_play, update_pet_pet, update_pet_math_win, update_pet_stage,
     release_pet, get_all_pets, spend_coins,
-    get_activity_by_id
+    get_activity_by_id, update_wish_progress
 )
 from score_engine import calculate_blind_score
 
@@ -92,3 +92,35 @@ def child_badges():
     earned = get_child_badges(child_id)
     earned_types = set(b['badge_type'] for b in earned)
     return render_template('child/badges.html', badges=BADGE_DEFINITIONS, earned_badges=earned_types)
+
+
+@child_bp.route('/child/wishes', methods=['GET', 'POST'])
+@login_required
+def child_wishes():
+    if session.get('role') != 'child':
+        return redirect(url_for('parent.parent_dashboard'))
+    child_id = session['user_id']
+
+    if request.method == 'POST':
+        title = request.form['title']
+        target_score = int(request.form['target_score'])
+        create_wish(child_id, title, target_score)
+        flash('心愿已添加，加油实现它！', 'success')
+        return redirect(url_for('child.child_wishes'))
+
+    wishes = get_wishes(child_id)
+    checkins = get_checkins_by_child(child_id, limit=1000)
+    total_score = sum(c['actual_score'] for c in checkins)
+    redemptions = get_redemptions_by_child(child_id)
+    spent = sum(r['total_cost'] for r in redemptions)
+    available = total_score - spent
+
+    # 更新心愿进度
+    for w in wishes:
+        if w['status'] != 'completed':
+            progress = min(available, w['target_score'])
+            update_wish_progress(w['id'], progress)
+
+    # 重新读取已更新数据
+    wishes = get_wishes(child_id)
+    return render_template('child/wishes.html', wishes=wishes, available=available)

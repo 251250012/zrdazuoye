@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}我的任务 - 小小动物园{% endblock %}
+{% block content %}
+<div class="child-header">
+    <h1>🐾 {{ session.display_name }}，今天也要加油哦！</h1>
+    <div class="coin-display">🪙 {{ coins }} 金币</div>
+</div>
+
+<div class="task-grid">
+    {% for task in tasks %}
+    <div class="task-card {% if task.id in checked_tasks %}done{% endif %}">
+        <h3>{{ task.name }}</h3>
+        {% if task.id in checked_tasks %}
+            <div class="task-done">✅ 已完成</div>
+        {% else %}
+            <div class="task-mystery">？</div>
+            <form method="POST" action="{{ url_for('child_checkin', task_id=task.id) }}">
+                <button type="submit" class="btn-checkin">打卡</button>
+            </form>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

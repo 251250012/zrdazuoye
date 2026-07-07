@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}任务管理 - 小小动物园{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>📋 任务管理</h1>
+    <button class="btn-primary" onclick="showAddForm()">+ 添加任务</button>
+</div>
+
+<!-- 添加/编辑任务表单 -->
+<div id="taskForm" class="modal" style="display:none">
+    <form method="POST" class="card">
+        <input type="hidden" name="action" value="create">
+        <input type="hidden" id="task_id" name="task_id" value="">
+        <h3 id="formTitle">添加新任务</h3>
+        <div class="form-group">
+            <label>任务名称</label>
+            <input type="text" name="name" id="task_name" required>
+            <div class="preset-tags">
+                {% for task in preset_tasks %}
+                <span class="tag" onclick="document.getElementById('task_name').value='{{ task }}'">{{ task }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>基准积分</label>
+                <input type="number" name="base_score" id="base_score" value="5" min="1">
+            </div>
+            <div class="form-group">
+                <label>波动下限</label>
+                <input type="number" name="fluctuation_low" id="fluctuation_low" value="-3" max="0">
+            </div>
+            <div class="form-group">
+                <label>波动上限</label>
+                <input type="number" name="fluctuation_high" id="fluctuation_high" value="3" min="0">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>
+                <input type="checkbox" name="locked" id="locked">
+                锁定积分（不波动）
+            </label>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">保存</button>
+            <button type="button" onclick="hideForm()" class="btn-secondary">取消</button>
+        </div>
+    </form>
+</div>
+
+<!-- 任务列表 -->
+<div class="task-list">
+    {% for task in tasks %}
+    <div class="task-card">
+        <div class="task-info">
+            <h3>{{ task.name }}</h3>
+            <p>基准分: {{ task.base_score }} | 波动: {{ task.fluctuation_low }} ~ {{ task.fluctuation_high }}
+            {% if task.locked %} | 🔒 锁定{% endif %}</p>
+        </div>
+        <div class="task-actions">
+            <form method="POST" style="display:inline">
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="task_id" value="{{ task.id }}">
+                <button type="submit" class="btn-danger btn-small">删除</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+function showAddForm() {
+    document.getElementById('taskForm').style.display = 'block';
+    document.getElementById('formTitle').textContent = '添加新任务';
+    document.getElementById('task_id').value = '';
+    document.querySelector('#taskForm form').action = '';
+}
+function hideForm() {
+    document.getElementById('taskForm').style.display = 'none';
+}
+</script>
+{% endblock %}

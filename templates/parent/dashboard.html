@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}家长首页 - 小小动物园{% endblock %}
+{% block content %}
+<div class="parent-dashboard">
+    <h1>👋 欢迎回来，{{ session.display_name }}</h1>
+    <div class="quick-links">
+        <a href="{{ url_for('parent_tasks') }}" class="card">
+            <span class="card-icon">📋</span>
+            <span class="card-title">任务管理</span>
+            <span class="card-desc">管理孩子的日常任务</span>
+        </a>
+        <a href="{{ url_for('parent_activities') }}" class="card">
+            <span class="card-icon">🎮</span>
+            <span class="card-title">活动管理</span>
+            <span class="card-desc">管理积分兑换活动</span>
+        </a>
+        <a href="{{ url_for('parent_settings') }}" class="card">
+            <span class="card-icon">⚙️</span>
+            <span class="card-title">设置</span>
+            <span class="card-desc">账号管理</span>
+        </a>
+    </div>
+</div>
+{% endblock %}

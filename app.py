@@ -3,6 +3,7 @@ from flask import Flask
 from config import Config
 from db import init_db
 from auth import auth_bp
+from parent_routes import parent_bp
 
 def create_app():
     app = Flask(__name__)
@@ -18,6 +19,7 @@ def create_app():
 
     # 注册蓝图
     app.register_blueprint(auth_bp)
+    app.register_blueprint(parent_bp)
 
     return app
 

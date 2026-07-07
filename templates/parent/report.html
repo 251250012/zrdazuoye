@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}成长报告 - 小小动物园{% endblock %}
+{% block content %}
+<h1>📊 成长报告</h1>
+{% if reports %}
+    {% for item in reports %}
+    <div class="report-card">
+        <h2>{{ item.child.display_name }} 的周报</h2>
+        <p class="report-period">{{ item.report.week_start }} ~ {{ item.report.week_end }}</p>
+        <div class="report-stats">
+            <div class="stat">
+                <span class="stat-value">{{ item.report.completion_rate }}%</span>
+                <span class="stat-label">完成率</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value">{{ item.report.total_score }}</span>
+                <span class="stat-label">获得积分</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value">{{ item.report.total_coins }}</span>
+                <span class="stat-label">获得金币</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value">{{ item.report.active_days }}/{{ item.report.total_days }}</span>
+                <span class="stat-label">活跃天数</span>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+<p style="color:#999;margin-top:20px;">暂无数据，让孩子开始打卡吧~</p>
+{% endif %}
+{% endblock %}

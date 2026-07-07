@@ -5,7 +5,7 @@ from models import (
     create_activity, get_all_activities, update_activity, delete_activity,
     get_checkins_by_child, get_user_by_id, create_user, update_password,
     update_user_grade, get_redemptions_by_child, update_redemption_photo,
-    get_all_redemptions
+    get_all_redemptions, get_all_children
 )
 import os
 import time
@@ -96,3 +96,16 @@ def upload_photo(redemption_id):
     update_redemption_photo(redemption_id, filename)
     flash('照片上传成功', 'success')
     return redirect(url_for('parent.parent_moments'))
+
+
+@parent_bp.route('/parent/report')
+@parent_required
+def parent_report():
+    from report_generator import generate_weekly_report
+    children = get_all_children()
+    reports = []
+    for child in children:
+        report = generate_weekly_report(child['id'])
+        if report:
+            reports.append({'child': child, 'report': report})
+    return render_template('parent/report.html', reports=reports)

@@ -116,3 +116,11 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f5f5f5; colo
 .badge-icon { font-size: 2.5em; margin-bottom: 8px; }
 .badge-name { font-weight: bold; margin-bottom: 5px; }
 .badge-desc { font-size: 0.8em; color: #777; }
+
+/* 周报 */
+.report-card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.report-period { color: #999; font-size: 0.9em; margin: 5px 0 15px; }
+.report-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; }
+.stat { text-align: center; padding: 10px; background: #f9f9f9; border-radius: 8px; }
+.stat-value { display: block; font-size: 1.5em; font-weight: bold; color: #ff6b35; }
+.stat-label { font-size: 0.85em; color: #777; }

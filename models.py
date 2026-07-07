@@ -293,6 +293,10 @@ def complete_wish(wish_id):
     db.commit()
 
 # === 周报相关 ===
+def get_all_children():
+    db = get_db()
+    return db.execute("SELECT * FROM user WHERE role = 'child'").fetchall()
+
 def create_weekly_report(child_id, week_start, completion_rate, total_score, total_coins):
     db = get_db()
     cur = db.execute(

@@ -4,5 +4,6 @@ __pycache__/
 uploads/*
 !uploads/.gitkeep
 *.db
+data/
 .superpowers/
 superpowers-main/

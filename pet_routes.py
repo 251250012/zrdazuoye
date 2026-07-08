@@ -2,7 +2,7 @@ import random
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from auth import login_required
 from models import (
-    get_active_pet, create_pet, update_pet_feed, update_pet_play,
+    get_active_pets, get_pet_by_id, create_pet, update_pet_feed, update_pet_play,
     update_pet_pet, update_pet_stage,
     release_pet, get_all_pets, spend_coins, get_coin_balance
 )
@@ -48,10 +48,11 @@ def child_pet():
     if session.get('role') != 'child':
         return redirect(url_for('parent.parent_dashboard'))
     child_id = session['user_id']
-    pet = get_active_pet(child_id)
+    pets = get_active_pets(child_id)
     coins = get_coin_balance(child_id)
     all_pets = get_all_pets(child_id)
-    return render_template('child/pet.html', pet=pet, coins=coins, pet_types=PET_TYPES, all_pets=all_pets, stage_names=STAGE_NAMES)
+    return render_template('child/pet.html', pets=pets, coins=coins, pet_types=PET_TYPES,
+                         all_pets=all_pets, stage_names=STAGE_NAMES)
 
 @pet_bp.route('/child/pet/adopt', methods=['POST'])
 @login_required
@@ -59,10 +60,6 @@ def adopt_pet():
     child_id = session['user_id']
     if session.get('role') != 'child':
         flash('只有孩子才能领养宠物', 'error')
-        return redirect(url_for('pet.child_pet'))
-    active = get_active_pet(child_id)
-    if active:
-        flash('已经有宠物了，养大后才能领新的', 'error')
         return redirect(url_for('pet.child_pet'))
     all_pets = get_all_pets(child_id)
     if len(all_pets) >= 5:
@@ -82,18 +79,24 @@ def adopt_pet():
     flash(f'🎉 花费 200 金币，{name}蛋来到了你的身边！', 'success')
     return redirect(url_for('pet.child_pet'))
 
-@pet_bp.route('/child/pet/interact/<action>', methods=['POST'])
+@pet_bp.route('/child/pet/interact/<int:pet_id>/<action>', methods=['POST'])
 @login_required
-def interact_pet(action):
+def interact_pet(pet_id, action):
     VALID_ACTIONS = ['feed', 'play', 'pet']
     if action not in VALID_ACTIONS:
         flash('无效操作', 'error')
         return redirect(url_for('pet.child_pet'))
 
     child_id = session['user_id']
-    pet = get_active_pet(child_id)
+    pets = get_active_pets(child_id)
+    pet = next((p for p in pets if p['id'] == pet_id), None)
     if not pet:
-        flash('还没有宠物，先领养一只吧', 'error')
+        flash('没有找到这只宠物', 'error')
+        return redirect(url_for('pet.child_pet'))
+
+    # 蛋阶段只能喂食
+    if pet['stage'] == 'egg' and action != 'feed':
+        flash('蛋阶段只能喂食哦！', 'error')
         return redirect(url_for('pet.child_pet'))
 
     coins = get_coin_balance(child_id)
@@ -115,7 +118,9 @@ def interact_pet(action):
         update_pet_pet(pet['id'])
 
     # 检查成长阶段
-    pet = get_active_pet(child_id)
+    pet = get_pet_by_id(pet_id)
+    if not pet:
+        return redirect(url_for('pet.child_pet'))
     if pet['stage'] == 'egg' and pet['feed_count'] >= 8:
         update_pet_stage(pet['id'], 'baby')
         flash(f'🥚 {pet["name"]}破壳而出啦！现在是幼年阶段', 'success')
@@ -126,11 +131,12 @@ def interact_pet(action):
     flash(f'{pet["name"]}: {reaction}', 'success')
     return redirect(url_for('pet.child_pet'))
 
-@pet_bp.route('/child/pet/release', methods=['POST'])
+@pet_bp.route('/child/pet/release/<int:pet_id>', methods=['POST'])
 @login_required
-def release_pet_route():
+def release_pet_route(pet_id):
     child_id = session['user_id']
-    pet = get_active_pet(child_id)
+    pets = get_active_pets(child_id)
+    pet = next((p for p in pets if p['id'] == pet_id), None)
     if not pet or pet['stage'] != 'adult':
         flash('宠物还没长大，还不能放生', 'error')
         return redirect(url_for('pet.child_pet'))

@@ -186,6 +186,14 @@ def get_active_pet(child_id):
         (child_id,)
     ).fetchone()
 
+def get_active_pets(child_id):
+    """获取孩子所有活着的宠物"""
+    db = get_db()
+    return db.execute(
+        'SELECT * FROM pet WHERE child_id = ? AND is_alive = 1 ORDER BY id DESC',
+        (child_id,)
+    ).fetchall()
+
 def update_pet_feed(pet_id):
     db = get_db()
     db.execute('UPDATE pet SET feed_count = feed_count + 1 WHERE id = ?', (pet_id,))
@@ -225,6 +233,10 @@ def get_all_pets(child_id):
         'SELECT * FROM pet WHERE child_id = ? ORDER BY id DESC',
         (child_id,)
     ).fetchall()
+
+def get_pet_by_id(pet_id):
+    db = get_db()
+    return db.execute('SELECT * FROM pet WHERE id = ?', (pet_id,)).fetchone()
 
 # === 金币相关 ===
 def add_coins(child_id, amount, description):

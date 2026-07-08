@@ -6,8 +6,9 @@
     <div class="coin-display">🪙 {{ coins }} 金币</div>
 </div>
 
-{% if pet %}
-<div class="pet-main">
+{% if pets %}
+<div class="pets-grid">
+    {% for pet in pets %}
     <div class="pet-card">
         <div class="pet-emoji">
             {% if pet.stage == 'egg' %}🥚{% elif pet.stage == 'baby' %}🐣{% else %}🐾{% endif %}
@@ -21,30 +22,31 @@
             <span>🤚 抚摸: {{ pet.pet_count }}</span>
             {% endif %}
         </div>
+        <div class="pet-interactions">
+            <form method="POST" action="{{ url_for('pet.interact_pet', pet_id=pet.id, action='feed') }}">
+                <button class="interact-btn">🍖 喂食 (50金币)</button>
+            </form>
+            {% if pet.stage != 'egg' %}
+            <form method="POST" action="{{ url_for('pet.interact_pet', pet_id=pet.id, action='play') }}">
+                <button class="interact-btn">🧸 玩耍 (80金币)</button>
+            </form>
+            <form method="POST" action="{{ url_for('pet.interact_pet', pet_id=pet.id, action='pet') }}">
+                <button class="interact-btn">🤚 摸一摸</button>
+            </form>
+            {% endif %}
+            {% if pet.stage == 'adult' %}
+            <form method="POST" action="{{ url_for('pet.release_pet_route', pet_id=pet.id) }}" onsubmit="return confirm('确定要让{{ pet.name }}去远方冒险吗？')">
+                <button class="interact-btn release">🌸 放生</button>
+            </form>
+            {% endif %}
+        </div>
     </div>
-
-    <div class="pet-interactions">
-        <form method="POST" action="{{ url_for('pet.interact_pet', action='feed') }}">
-            <button class="interact-btn">🍖 喂食 (50金币)</button>
-        </form>
-        {% if pet.stage != 'egg' %}
-        <form method="POST" action="{{ url_for('pet.interact_pet', action='play') }}">
-            <button class="interact-btn">🧸 玩耍 (80金币)</button>
-        </form>
-        <form method="POST" action="{{ url_for('pet.interact_pet', action='pet') }}">
-            <button class="interact-btn">🤚 摸一摸</button>
-        </form>
-        {% endif %}
-        {% if pet.stage == 'adult' %}
-        <form method="POST" action="{{ url_for('pet.release_pet_route') }}" onsubmit="return confirm('确定要让{{ pet.name }}去远方冒险吗？')">
-            <button class="interact-btn release">🌸 放生</button>
-        </form>
-        {% endif %}
-    </div>
+    {% endfor %}
 </div>
 {% else %}
 <div class="adopt-section">
     <h2>🥚 购买宠物蛋（200金币）</h2>
+    <p style="color:#999;margin-bottom:15px;">最多可同时养 5 只宠物</p>
     <form method="POST" action="{{ url_for('pet.adopt_pet') }}">
         <div class="form-group">
             <label>选择宠物</label>

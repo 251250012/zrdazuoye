@@ -4,7 +4,7 @@ from auth import login_required
 from models import (
     get_all_tasks, get_checkin_by_date, get_checkins_by_child,
     get_all_activities, get_coin_balance, get_child_badges,
-    get_active_pet, get_redemptions_by_child,
+    get_redemptions_by_child,
     create_redemption, get_user_by_id, create_pet, update_pet_feed,
     update_pet_play, update_pet_pet, update_pet_stage,
     release_pet, get_all_pets, spend_coins, add_coins,

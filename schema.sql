@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS user (
     role TEXT NOT NULL CHECK(role IN ('parent', 'child')),
     display_name TEXT NOT NULL,
     grade INTEGER DEFAULT 1,
+    parent_id INTEGER DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

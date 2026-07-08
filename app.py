@@ -19,14 +19,19 @@ def create_app():
         with app.app_context():
             init_db()
     else:
-        # 数据库迁移：添加 created_at 列到 pet 表
+        # 数据库迁移
         with app.app_context():
             db = get_db()
             try:
                 db.execute("ALTER TABLE pet ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
                 db.commit()
             except Exception:
-                pass  # 列已存在则忽略
+                pass
+            try:
+                db.execute("ALTER TABLE user ADD COLUMN parent_id INTEGER DEFAULT NULL")
+                db.commit()
+            except Exception:
+                pass
 
     # 注册蓝图
     app.register_blueprint(auth_bp)

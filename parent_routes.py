@@ -13,7 +13,7 @@ parent_bp = Blueprint('parent', __name__)
 @parent_bp.route('/parent')
 @parent_required
 def parent_dashboard():
-    tasks = get_all_tasks()
+    tasks = get_all_tasks(session['user_id'])
     children = []  # 简单获取所有孩子用户
     return render_template('parent/dashboard.html', tasks=tasks)
 
@@ -45,7 +45,7 @@ def parent_tasks():
             flash('任务已删除', 'success')
         return redirect(url_for('parent.parent_tasks'))
 
-    tasks = get_all_tasks()
+    tasks = get_all_tasks(session['user_id'])
     PRESET_TASKS = ['读书', '写字', '画画', '弹钢琴', '跳舞', '做数学题']
     return render_template('parent/tasks.html', tasks=tasks, preset_tasks=PRESET_TASKS)
 
@@ -68,7 +68,7 @@ def parent_activities():
             flash('活动已删除', 'success')
         return redirect(url_for('parent.parent_activities'))
 
-    activities = get_all_activities()
+    activities = get_all_activities(session['user_id'])
     return render_template('parent/activities.html', activities=activities)
 
 
@@ -109,7 +109,7 @@ def parent_settings():
             password = request.form['password']
             display_name = request.form['display_name']
             grade = int(request.form.get('grade', 1))
-            create_user(username, password, 'child', display_name, grade)
+            create_user(username, password, 'child', display_name, grade, session['user_id'])
             flash(f'孩子账号 {display_name} 创建成功', 'success')
         elif action == 'change_grade':
             child_id = int(request.form['child_id'])

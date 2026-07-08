@@ -19,9 +19,11 @@ child_bp = Blueprint('child', __name__)
 def child_dashboard():
     if session.get('role') != 'child':
         return redirect(url_for('parent.parent_dashboard'))
-    tasks = get_all_tasks()
-    today = datetime.now().strftime('%Y-%m-%d')
     child_id = session['user_id']
+    child = get_user_by_id(child_id)
+    parent_id = child['parent_id'] if child else None
+    tasks = get_all_tasks(parent_id) if parent_id else []
+    today = datetime.now().strftime('%Y-%m-%d')
     checked_tasks = []
     for t in tasks:
         c = get_checkin_by_date(child_id, t['id'], today)
@@ -44,8 +46,10 @@ def child_checkin(task_id):
 def child_shop():
     if session.get('role') != 'child':
         return redirect(url_for('parent.parent_dashboard'))
-    activities = get_all_activities()
     child_id = session['user_id']
+    child = get_user_by_id(child_id)
+    parent_id = child['parent_id'] if child else None
+    activities = get_all_activities(parent_id) if parent_id else []
     coins = get_coin_balance(child_id)
     checkins = get_checkins_by_child(child_id, limit=1000)
     total_score = sum(c['actual_score'] for c in checkins)

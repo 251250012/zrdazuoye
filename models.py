@@ -2,12 +2,12 @@ from db import get_db
 from werkzeug.security import generate_password_hash, check_password_hash
 
 # === 用户相关 ===
-def create_user(username, password, role, display_name, grade=None):
+def create_user(username, password, role, display_name, grade=None, parent_id=None):
     db = get_db()
     password_hash = generate_password_hash(password)
     cur = db.execute(
-        'INSERT INTO user (username, password_hash, role, display_name, grade) VALUES (?, ?, ?, ?, ?)',
-        (username, password_hash, role, display_name, grade)
+        'INSERT INTO user (username, password_hash, role, display_name, grade, parent_id) VALUES (?, ?, ?, ?, ?, ?)',
+        (username, password_hash, role, display_name, grade, parent_id)
     )
     db.commit()
     return cur.lastrowid
@@ -47,8 +47,10 @@ def create_task(name, base_score, fluctuation_low, fluctuation_high, locked, cre
     db.commit()
     return cur.lastrowid
 
-def get_all_tasks():
+def get_all_tasks(created_by=None):
     db = get_db()
+    if created_by:
+        return db.execute('SELECT * FROM task WHERE active = 1 AND created_by = ? ORDER BY id', (created_by,)).fetchall()
     return db.execute('SELECT * FROM task WHERE active = 1 ORDER BY id').fetchall()
 
 def get_task_by_id(task_id):
@@ -111,8 +113,10 @@ def create_activity(name, cost_per_unit, unit_type, need_photo, created_by):
     db.commit()
     return cur.lastrowid
 
-def get_all_activities():
+def get_all_activities(created_by=None):
     db = get_db()
+    if created_by:
+        return db.execute('SELECT * FROM activity WHERE active = 1 AND created_by = ? ORDER BY id', (created_by,)).fetchall()
     return db.execute('SELECT * FROM activity WHERE active = 1 ORDER BY id').fetchall()
 
 def get_activity_by_id(activity_id):

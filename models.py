@@ -222,7 +222,7 @@ def release_pet(pet_id):
 def get_all_pets(child_id):
     db = get_db()
     return db.execute(
-        'SELECT * FROM pet WHERE child_id = ? ORDER BY created_at DESC',
+        'SELECT * FROM pet WHERE child_id = ? ORDER BY id DESC',
         (child_id,)
     ).fetchall()
 

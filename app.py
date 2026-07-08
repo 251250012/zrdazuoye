@@ -1,7 +1,7 @@
 import os
 from flask import Flask, redirect, url_for
 from config import Config
-from db import init_db
+from db import init_db, get_db
 from auth import auth_bp
 from child_routes import child_bp
 from parent_routes import parent_bp
@@ -18,6 +18,15 @@ def create_app():
     if not os.path.exists(app.config['DATABASE']):
         with app.app_context():
             init_db()
+    else:
+        # 数据库迁移：添加 created_at 列到 pet 表
+        with app.app_context():
+            db = get_db()
+            try:
+                db.execute("ALTER TABLE pet ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+                db.commit()
+            except Exception:
+                pass  # 列已存在则忽略
 
     # 注册蓝图
     app.register_blueprint(auth_bp)

@@ -69,6 +69,7 @@ CREATE TABLE IF NOT EXISTS pet (
     is_alive BOOLEAN NOT NULL DEFAULT 1,
     total_pets_raised INTEGER NOT NULL DEFAULT 0,
     released_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (child_id) REFERENCES user(id)
 );
 

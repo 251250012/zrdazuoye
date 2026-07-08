@@ -18,11 +18,9 @@
                 {% if session.get('role') == 'parent' %}
                     <a href="{{ url_for('parent.parent_dashboard') }}">首页</a>
                     <a href="{{ url_for('parent.parent_tasks') }}">任务管理</a>
-                    <a href="{{ url_for('parent.parent_activities') }}">活动管理</a>
                     <a href="{{ url_for('parent.parent_settings') }}">设置</a>
                 {% else %}
                     <a href="{{ url_for('child.child_dashboard') }}">首页</a>
-                    <a href="{{ url_for('child.child_shop') }}">商城</a>
                     <a href="{{ url_for('pet.child_pet') }}">宠物</a>
                     <a href="{{ url_for('child.child_quiz') }}">答题</a>
                     <a href="{{ url_for('child.child_badges') }}">勋章</a>

@@ -1,4 +1,5 @@
 import random
+import os
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from auth import login_required
 from models import (
@@ -42,6 +43,20 @@ PET_REACTIONS = {
 
 STAGE_NAMES = {'egg': '🥚 蛋', 'baby': '🐣 幼年', 'adult': '🐾 成年'}
 
+def get_pet_images(pet_type, stage):
+    """获取宠物指定阶段的随机图片，没有则返回空列表"""
+    if stage == 'egg':
+        return []
+    image_dir = os.path.join('static', 'images', 'pets', pet_type)
+    if not os.path.exists(image_dir):
+        return []
+    prefix = f'{stage}_'
+    images = sorted([f for f in os.listdir(image_dir) if f.startswith(prefix)])
+    if not images:
+        return []
+    # 随机选一张
+    return [os.path.join('images', 'pets', pet_type, random.choice(images))]
+
 @pet_bp.route('/child/pet')
 @login_required
 def child_pet():
@@ -51,8 +66,14 @@ def child_pet():
     pets = get_active_pets(child_id)
     coins = get_coin_balance(child_id)
     all_pets = get_all_pets(child_id)
+    # 为每只宠物随机选一张图片
+    pet_images = {}
+    for pet in pets:
+        images = get_pet_images(pet['type'], pet['stage'])
+        if images:
+            pet_images[pet['id']] = images
     return render_template('child/pet.html', pets=pets, coins=coins, pet_types=PET_TYPES,
-                         all_pets=all_pets, stage_names=STAGE_NAMES)
+                         all_pets=all_pets, stage_names=STAGE_NAMES, pet_images=pet_images)
 
 @pet_bp.route('/child/pet/adopt', methods=['POST'])
 @login_required

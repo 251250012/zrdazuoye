@@ -11,7 +11,23 @@
     {% for pet in pets %}
     <div class="pet-card">
         <div class="pet-emoji">
-            {% if pet.stage == 'egg' %}🥚{% elif pet.stage == 'baby' %}🐣{% else %}🐾{% endif %}
+            {% if pet.stage == 'egg' %}
+                🥚
+            {% elif pet.stage == 'baby' %}
+                {% set images = pet_images.get(pet.id, []) %}
+                {% if images %}
+                <img src="{{ url_for('static', filename=images[0]) }}" alt="{{ pet.name }}" class="pet-image">
+                {% else %}
+                🐣
+                {% endif %}
+            {% else %}
+                {% set images = pet_images.get(pet.id, []) %}
+                {% if images %}
+                <img src="{{ url_for('static', filename=images[0]) }}" alt="{{ pet.name }}" class="pet-image">
+                {% else %}
+                🐾
+                {% endif %}
+            {% endif %}
         </div>
         <h2>{{ pet.name }}</h2>
         <p class="pet-type">{{ pet.type }} · {{ stage_names[pet.stage] }}</p>
@@ -43,10 +59,12 @@
     </div>
     {% endfor %}
 </div>
-{% else %}
+{% endif %}
+
+{% if pets|length < 5 %}
 <div class="adopt-section">
     <h2>🥚 购买宠物蛋（200金币）</h2>
-    <p style="color:#999;margin-bottom:15px;">最多可同时养 5 只宠物</p>
+    <p style="color:#999;margin-bottom:15px;">已养 {{ pets|length }}/5，还可领养 {{ 5 - pets|length }} 只</p>
     <form method="POST" action="{{ url_for('pet.adopt_pet') }}">
         <div class="form-group">
             <label>选择宠物</label>

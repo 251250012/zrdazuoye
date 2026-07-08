@@ -33,30 +33,6 @@ CREATE TABLE IF NOT EXISTS checkin (
     FOREIGN KEY (child_id) REFERENCES user(id)
 );
 
-CREATE TABLE IF NOT EXISTS activity (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    cost_per_unit INTEGER NOT NULL,
-    unit_type TEXT NOT NULL CHECK(unit_type IN ('minute', 'once')),
-    need_photo BOOLEAN NOT NULL DEFAULT 0,
-    active BOOLEAN NOT NULL DEFAULT 1,
-    created_by INTEGER NOT NULL,
-    FOREIGN KEY (created_by) REFERENCES user(id)
-);
-
-CREATE TABLE IF NOT EXISTS redemption (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    activity_id INTEGER NOT NULL,
-    child_id INTEGER NOT NULL,
-    quantity INTEGER NOT NULL DEFAULT 1,
-    total_cost INTEGER NOT NULL,
-    photo_path TEXT,
-    status TEXT NOT NULL DEFAULT 'redeemed' CHECK(status IN ('redeemed', 'photo_uploaded', 'completed')),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (activity_id) REFERENCES activity(id),
-    FOREIGN KEY (child_id) REFERENCES user(id)
-);
-
 CREATE TABLE IF NOT EXISTS pet (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     child_id INTEGER NOT NULL,
@@ -81,17 +57,6 @@ CREATE TABLE IF NOT EXISTS badge (
     earned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (child_id) REFERENCES user(id),
     UNIQUE(child_id, badge_type)
-);
-
-CREATE TABLE IF NOT EXISTS wish (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    child_id INTEGER NOT NULL,
-    title TEXT NOT NULL,
-    target_score INTEGER NOT NULL,
-    current_score INTEGER NOT NULL DEFAULT 0,
-    status TEXT NOT NULL DEFAULT 'in_progress' CHECK(status IN ('in_progress', 'completed')),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (child_id) REFERENCES user(id)
 );
 
 CREATE TABLE IF NOT EXISTS weekly_report (

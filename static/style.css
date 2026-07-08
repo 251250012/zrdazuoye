@@ -87,7 +87,8 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f5f5f5; colo
 .pets-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
 .pet-main { text-align: center; }
 .pet-card { background: white; border-radius: 16px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; }
-.pet-emoji { font-size: 5em; margin-bottom: 10px; }
+.pet-emoji { font-size: 5em; margin-bottom: 10px; text-align: center; min-height: 120px; display: flex; align-items: center; justify-content: center; }
+.pet-image { width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 3px solid #ff6b35; }
 .pet-stats { display: flex; gap: 15px; justify-content: center; margin-top: 15px; font-size: 0.9em; color: #666; }
 .pet-interactions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 .interact-btn { background: white; border: 2px solid #ff6b35; color: #ff6b35; padding: 12px 24px; border-radius: 25px; font-size: 1em; cursor: pointer; }

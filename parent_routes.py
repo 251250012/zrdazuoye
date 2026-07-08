@@ -2,10 +2,8 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from auth import parent_required
 from models import (
     create_task, get_all_tasks, get_task_by_id, update_task, delete_task,
-    create_activity, get_all_activities, update_activity, delete_activity,
-    get_checkins_by_child, get_user_by_id, get_user_by_username, create_user, update_password,
-    update_user_grade, get_redemptions_by_child,
-    get_all_redemptions, get_all_children
+    get_user_by_id, get_user_by_username, create_user, update_password,
+    update_user_grade, get_all_children
 )
 
 parent_bp = Blueprint('parent', __name__)
@@ -25,20 +23,10 @@ def parent_tasks():
         if action == 'create':
             name = request.form['name']
             base_score = int(request.form['base_score'])
-            fluctuation_low = int(request.form['fluctuation_low'])
-            fluctuation_high = int(request.form['fluctuation_high'])
+            fluctuation = max(1, int(base_score * 0.2))
             locked = 1 if request.form.get('locked') else 0
-            create_task(name, base_score, fluctuation_low, fluctuation_high, locked, session['user_id'])
+            create_task(name, base_score, -fluctuation, fluctuation, locked, session['user_id'])
             flash('任务创建成功', 'success')
-        elif action == 'update':
-            task_id = int(request.form['task_id'])
-            name = request.form['name']
-            base_score = int(request.form['base_score'])
-            fluctuation_low = int(request.form['fluctuation_low'])
-            fluctuation_high = int(request.form['fluctuation_high'])
-            locked = 1 if request.form.get('locked') else 0
-            update_task(task_id, name, base_score, fluctuation_low, fluctuation_high, locked)
-            flash('任务更新成功', 'success')
         elif action == 'delete':
             task_id = int(request.form['task_id'])
             delete_task(task_id)
@@ -48,35 +36,6 @@ def parent_tasks():
     tasks = get_all_tasks(session['user_id'])
     PRESET_TASKS = ['读书', '写字', '画画', '弹钢琴', '跳舞', '做数学题']
     return render_template('parent/tasks.html', tasks=tasks, preset_tasks=PRESET_TASKS)
-
-
-@parent_bp.route('/parent/activities', methods=['GET', 'POST'])
-@parent_required
-def parent_activities():
-    if request.method == 'POST':
-        action = request.form.get('action')
-        if action == 'create':
-            name = request.form['name']
-            cost_per_unit = int(request.form['cost_per_unit'])
-            unit_type = request.form['unit_type']
-            need_photo = 1 if request.form.get('need_photo') else 0
-            create_activity(name, cost_per_unit, unit_type, need_photo, session['user_id'])
-            flash('活动创建成功', 'success')
-        elif action == 'delete':
-            activity_id = int(request.form['activity_id'])
-            delete_activity(activity_id)
-            flash('活动已删除', 'success')
-        return redirect(url_for('parent.parent_activities'))
-
-    activities = get_all_activities(session['user_id'])
-    return render_template('parent/activities.html', activities=activities)
-
-
-@parent_bp.route('/parent/moments')
-@parent_required
-def parent_moments():
-    redemptions = get_all_redemptions()
-    return render_template('parent/moments.html', redemptions=redemptions)
 
 
 @parent_bp.route('/parent/report')

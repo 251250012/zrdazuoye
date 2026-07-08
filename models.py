@@ -266,31 +266,22 @@ def get_child_badges(child_id):
     return db.execute('SELECT * FROM badge WHERE child_id = ? ORDER BY earned_at', (child_id,)).fetchall()
 
 # === 心愿相关 ===
-def create_wish(child_id, title, target_score):
+# === 答题相关 ===
+def create_quiz_round(child_id, date, correct_count, coins_earned):
     db = get_db()
     cur = db.execute(
-        'INSERT INTO wish (child_id, title, target_score) VALUES (?, ?, ?)',
-        (child_id, title, target_score)
+        'INSERT INTO quiz_round (child_id, date, correct_count, coins_earned) VALUES (?, ?, ?, ?)',
+        (child_id, date, correct_count, coins_earned)
     )
     db.commit()
     return cur.lastrowid
 
-def get_wishes(child_id):
+def get_today_quiz_rounds(child_id, date):
     db = get_db()
     return db.execute(
-        'SELECT * FROM wish WHERE child_id = ? ORDER BY created_at DESC',
-        (child_id,)
+        'SELECT * FROM quiz_round WHERE child_id = ? AND date = ?',
+        (child_id, date)
     ).fetchall()
-
-def update_wish_progress(wish_id, current_score):
-    db = get_db()
-    db.execute('UPDATE wish SET current_score = ? WHERE id = ?', (current_score, wish_id))
-    db.commit()
-
-def complete_wish(wish_id):
-    db = get_db()
-    db.execute("UPDATE wish SET status = 'completed' WHERE id = ?", (wish_id,))
-    db.commit()
 
 # === 周报相关 ===
 def get_all_children():

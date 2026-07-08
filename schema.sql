@@ -113,3 +113,13 @@ CREATE TABLE IF NOT EXISTS coin_transaction (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (child_id) REFERENCES user(id)
 );
+
+CREATE TABLE IF NOT EXISTS quiz_round (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    child_id INTEGER NOT NULL,
+    date TEXT NOT NULL,
+    correct_count INTEGER NOT NULL DEFAULT 0,
+    coins_earned INTEGER NOT NULL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (child_id) REFERENCES user(id)
+);

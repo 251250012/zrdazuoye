@@ -16,8 +16,10 @@
         <p class="pet-type">{{ pet.type }} · {{ stage_names[pet.stage] }}</p>
         <div class="pet-stats">
             <span>🍖 喂食: {{ pet.feed_count }}/{% if pet.stage == 'egg' %}8{% else %}23{% endif %}</span>
+            {% if pet.stage != 'egg' %}
             <span>🧸 玩耍: {{ pet.play_count }}/10</span>
             <span>🤚 抚摸: {{ pet.pet_count }}</span>
+            {% endif %}
         </div>
     </div>
 
@@ -25,12 +27,14 @@
         <form method="POST" action="{{ url_for('pet.interact_pet', action='feed') }}">
             <button class="interact-btn">🍖 喂食 (50金币)</button>
         </form>
+        {% if pet.stage != 'egg' %}
         <form method="POST" action="{{ url_for('pet.interact_pet', action='play') }}">
             <button class="interact-btn">🧸 玩耍 (80金币)</button>
         </form>
         <form method="POST" action="{{ url_for('pet.interact_pet', action='pet') }}">
             <button class="interact-btn">🤚 摸一摸</button>
         </form>
+        {% endif %}
         {% if pet.stage == 'adult' %}
         <form method="POST" action="{{ url_for('pet.release_pet_route') }}" onsubmit="return confirm('确定要让{{ pet.name }}去远方冒险吗？')">
             <button class="interact-btn release">🌸 放生</button>
@@ -40,7 +44,7 @@
 </div>
 {% else %}
 <div class="adopt-section">
-    <h2>领养一只新宠物</h2>
+    <h2>🥚 购买宠物蛋（200金币）</h2>
     <form method="POST" action="{{ url_for('pet.adopt_pet') }}">
         <div class="form-group">
             <label>选择宠物</label>
@@ -54,7 +58,7 @@
             <label>起个名字</label>
             <input type="text" name="name" value="宝贝" required>
         </div>
-        <button type="submit" class="btn-primary">领养！</button>
+        <button type="submit" class="btn-primary">🥚 购买！</button>
     </form>
 </div>
 {% endif %}

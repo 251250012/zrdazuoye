@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}答题 - 小小动物园{% endblock %}
+{% block content %}
+<div class="child-header">
+    <h1>🧮 每日答题</h1>
+    <div class="coin-display">📊 {{ rounds_used }}/10 轮</div>
+</div>
+
+<div class="math-card">
+    {% if round_active and question %}
+    <div class="quiz-status">
+        第 {{ rounds_used + 1 }} 轮 · 已答对 <strong>{{ correct_count }}</strong> 题
+    </div>
+    <div class="math-question">{{ question.question }}</div>
+    <form method="POST" action="{{ url_for('child.quiz_answer') }}" class="math-input">
+        <input type="number" name="answer" placeholder="输入答案" autofocus required>
+        <button type="submit" class="btn-primary">提交</button>
+    </form>
+    {% else %}
+    <div class="quiz-info">
+        {% if rounds_used >= 10 %}
+        <p>🎯 今天的答题次数已用完，明天再来吧！</p>
+        {% else %}
+        <p>每天有 <strong>10 轮</strong>答题机会，每轮最多 <strong>10 题</strong></p>
+        <p>答错则本轮结束，每答对 1 题获得 <strong>10 金币</strong></p>
+        <form method="POST" action="{{ url_for('child.quiz_start') }}">
+            <button type="submit" class="btn-primary" style="font-size:1.2em;padding:15px 40px;">🚀 开始答题</button>
+        </form>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+{% if today_rounds %}
+<div class="quiz-history">
+    <h3>今日答题记录</h3>
+    {% for r in today_rounds %}
+    <div class="quiz-round-card">
+        <span>第 {{ loop.index }} 轮</span>
+        <span>答对 {{ r.correct_count }} 题</span>
+        <span>获得 🪙 {{ r.coins_earned }} 金币</span>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

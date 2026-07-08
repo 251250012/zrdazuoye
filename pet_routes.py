@@ -1,11 +1,10 @@
 import random
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from auth import login_required
 from models import (
     get_active_pet, create_pet, update_pet_feed, update_pet_play,
-    update_pet_pet, update_pet_stage, update_pet_math_win,
-    release_pet, get_all_pets, spend_coins, get_coin_balance,
-    get_user_by_id
+    update_pet_pet, update_pet_stage,
+    release_pet, get_all_pets, spend_coins, get_coin_balance
 )
 
 pet_bp = Blueprint('pet', __name__)
@@ -66,17 +65,21 @@ def adopt_pet():
         flash('已经有宠物了，养大后才能领新的', 'error')
         return redirect(url_for('pet.child_pet'))
     all_pets = get_all_pets(child_id)
-    released_count = sum(1 for p in all_pets if not p['is_alive'])
-    if released_count >= 5:
-        flash('已经养大 5 只宠物了，动物园满了！', 'error')
+    if len(all_pets) >= 5:
+        flash('最多只能养 5 只宠物哦！', 'error')
+        return redirect(url_for('pet.child_pet'))
+    coins = get_coin_balance(child_id)
+    if coins < 200:
+        flash('金币不够啦，需要 200 金币才能购买宠物蛋！', 'error')
         return redirect(url_for('pet.child_pet'))
     pet_type = request.form.get('pet_type')
     if pet_type not in PET_TYPES:
         flash('请选择一种宠物', 'error')
         return redirect(url_for('pet.child_pet'))
     name = request.form.get('name', '宝贝')
+    spend_coins(child_id, 200, f'购买{pet_type}宠物蛋')
     create_pet(child_id, pet_type, name)
-    flash(f'🎉 {name}来到了你的身边！', 'success')
+    flash(f'🎉 花费 200 金币，{name}蛋来到了你的身边！', 'success')
     return redirect(url_for('pet.child_pet'))
 
 @pet_bp.route('/child/pet/interact/<action>', methods=['POST'])
@@ -134,123 +137,3 @@ def release_pet_route():
     release_pet(pet['id'])
     flash(f'🌸 {pet["name"]}去远方冒险了，偶尔会回来看你的！', 'success')
     return redirect(url_for('pet.child_pet'))
-
-# === 数学游戏 ===
-
-def generate_math_question(grade):
-    """根据年级生成数学题"""
-    if grade == 0:  # 幼儿园：10以内加减
-        a = random.randint(1, 9)
-        b = random.randint(1, 9)
-        op = '+' if random.random() > 0.5 else '-'
-        if op == '-' and a < b:
-            a, b = b, a
-        answer = a + b if op == '+' else a - b
-
-    elif grade == 1:  # 一年级：100以内无进退位加减
-        op = '+' if random.random() > 0.5 else '-'
-        if op == '+':
-            # 无进位：个位和十位相加都不超过9
-            a_ten = random.randint(1, 8)
-            a_one = random.randint(0, 9)
-            b_ten = random.randint(0, 9 - a_ten)
-            b_one = random.randint(0, 9 - a_one)
-            if b_ten == 0 and b_one == 0:
-                b_ten = 1  # 保证 b > 0；a_ten <= 8 所以 a_ten + 1 <= 9 不进位
-            a = a_ten * 10 + a_one
-            b = b_ten * 10 + b_one
-            answer = a + b
-        else:
-            # 无退位：a的个位十位都大于等于b的对应位
-            a = random.randint(11, 99)
-            b_ten = random.randint(0, a // 10)
-            b_one = random.randint(0, a % 10)
-            if b_ten == 0 and b_one == 0:
-                b_ten = 1  # 保证 b > 0；a_ten >= 1 所以不退位
-            b = b_ten * 10 + b_one
-            answer = a - b
-
-    elif grade == 2:  # 二年级：九九乘除 + 100以内进退位加减
-        if random.random() > 0.5:
-            # 九九乘除
-            x = random.randint(2, 9)
-            y = random.randint(2, 9)
-            if random.random() > 0.5:
-                # 乘法：x × y = ?
-                a, b, op, answer = x, y, '×', x * y
-            else:
-                # 除法：(x*y) ÷ x = y 或 (x*y) ÷ y = x
-                if random.random() > 0.5:
-                    a, b, op, answer = x * y, x, '÷', y
-                else:
-                    a, b, op, answer = x * y, y, '÷', x
-        else:
-            # 100以内进退位加减
-            a = random.randint(10, 99)
-            b = random.randint(10, 99)
-            op = '+' if random.random() > 0.5 else '-'
-            answer = a + b if op == '+' else a - b
-
-    else:  # 三年级
-        if random.random() > 0.4:
-            # 1000以内加减
-            a = random.randint(100, 999)
-            b = random.randint(100, 999)
-            op = '+' if random.random() > 0.5 else '-'
-            answer = a + b if op == '+' else a - b
-        elif random.random() > 0.5:
-            # 两位数乘整十整百
-            a = random.randint(10, 99)
-            if random.random() > 0.5:
-                b = random.randint(1, 9) * 10  # 整十：10-90
-            else:
-                b = random.choice([100, 200, 300, 400, 500, 600, 700, 800, 900, 1000])  # 整百
-            op = '×'
-            answer = a * b
-        else:
-            # 有余数除法
-            b = random.randint(3, 9)
-            q = random.randint(2, 50)
-            r = random.randint(1, b - 1)
-            a = b * q + r
-            op = '÷'
-            answer = q
-            return {'question': f'{a} {op} {b} = ?（有余数）', 'answer': answer, 'remainder': r}
-
-    return {'question': f'{a} {op} {b} = ?', 'answer': answer}
-
-
-@pet_bp.route('/child/math-game')
-@login_required
-def math_game():
-    if session.get('role') != 'child':
-        return redirect(url_for('parent.parent_dashboard'))
-    child_id = session['user_id']
-    user = get_user_by_id(child_id)
-    grade = user['grade'] if user else 1
-    pet = get_active_pet(child_id)
-    return render_template('child/math_game.html', grade=grade, pet=pet)
-
-
-@pet_bp.route('/child/math-game/question')
-@login_required
-def math_question():
-    child_id = session['user_id']
-    user = get_user_by_id(child_id)
-    grade = user['grade'] if user else 1
-    q = generate_math_question(grade)
-    return jsonify(q)
-
-
-@pet_bp.route('/child/math-game/answer', methods=['POST'])
-@login_required
-def math_answer():
-    data = request.get_json()
-    if not data or 'answer' not in data or 'user_answer' not in data:
-        return jsonify({'correct': False, 'error': 'missing_data'})
-    correct = data['answer'] == data['user_answer']
-    if correct and data.get('pet_id'):
-        update_pet_math_win(data['pet_id'])
-        # 宠物额外成长
-        update_pet_play(data['pet_id'])
-    return jsonify({'correct': correct})

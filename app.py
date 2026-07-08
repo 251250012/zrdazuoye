@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, redirect, url_for
 from config import Config
 from db import init_db
 from auth import auth_bp
@@ -24,6 +24,10 @@ def create_app():
     app.register_blueprint(parent_bp)
     app.register_blueprint(child_bp)
     app.register_blueprint(pet_bp)
+
+    @app.route('/')
+    def index():
+        return redirect(url_for('auth.login'))
 
     return app
 

@@ -8,14 +8,7 @@
     <div class="moment-card">
         <h3>{{ r.activity_name }}</h3>
         <p>{{ r.child_name }} · {{ r.created_at[:10] }}</p>
-        {% if r.photo_path %}
-        <img src="{{ url_for('static', filename='uploads/' + r.photo_path) }}" class="moment-photo">
-        {% elif r.need_photo %}
-        <form method="POST" action="{{ url_for('parent.upload_photo', redemption_id=r.id) }}" enctype="multipart/form-data">
-            <input type="file" name="photo" required>
-            <button type="submit" class="btn-primary btn-small">上传</button>
-        </form>
-        {% endif %}
+        <p style="color:#999;font-size:0.85em;">兑换了 {{ r.quantity }} 次</p>
     </div>
     {% endfor %}
 </div>

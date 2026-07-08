@@ -59,7 +59,7 @@ def child_redeem(activity_id):
     activity = get_activity_by_id(activity_id)
     if not activity:
         flash('活动不存在', 'error')
-        return redirect(url_for('child_shop'))
+        return redirect(url_for('child.child_shop'))
 
     quantity = int(request.form.get('quantity', 1))
     total_cost = activity['cost_per_unit'] * quantity
@@ -73,7 +73,7 @@ def child_redeem(activity_id):
     available = total_score - spent
     if available < total_cost:
         flash('积分不够哦，继续加油吧！💪', 'error')
-        return redirect(url_for('child_shop'))
+        return redirect(url_for('child.child_shop'))
 
     create_redemption(activity_id, child_id, quantity, total_cost)
     flash(f'🎉 兑换成功！消耗了 {total_cost} 积分', 'success')

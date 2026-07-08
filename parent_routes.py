@@ -1,14 +1,12 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session, current_app
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from auth import parent_required
 from models import (
     create_task, get_all_tasks, get_task_by_id, update_task, delete_task,
     create_activity, get_all_activities, update_activity, delete_activity,
     get_checkins_by_child, get_user_by_id, create_user, update_password,
-    update_user_grade, get_redemptions_by_child, update_redemption_photo,
+    update_user_grade, get_redemptions_by_child,
     get_all_redemptions, get_all_children
 )
-import os
-import time
 
 parent_bp = Blueprint('parent', __name__)
 
@@ -79,23 +77,6 @@ def parent_activities():
 def parent_moments():
     redemptions = get_all_redemptions()
     return render_template('parent/moments.html', redemptions=redemptions)
-
-
-@parent_bp.route('/parent/upload_photo/<int:redemption_id>', methods=['POST'])
-@parent_required
-def upload_photo(redemption_id):
-    if 'photo' not in request.files:
-        flash('请选择照片', 'error')
-        return redirect(url_for('parent.parent_moments'))
-    file = request.files['photo']
-    if file.filename == '':
-        flash('请选择照片', 'error')
-        return redirect(url_for('parent.parent_moments'))
-    filename = f"{redemption_id}_{int(time.time())}.jpg"
-    file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
-    update_redemption_photo(redemption_id, filename)
-    flash('照片上传成功', 'success')
-    return redirect(url_for('parent.parent_moments'))
 
 
 @parent_bp.route('/parent/report')

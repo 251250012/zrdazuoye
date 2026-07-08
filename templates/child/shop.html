@@ -11,9 +11,6 @@
     <div class="shop-card">
         <h3>{{ activity.name }}</h3>
         <p class="price">{{ activity.cost_per_unit }} 积分/{{ activity.unit_type }}</p>
-        {% if activity.need_photo %}
-        <span class="photo-tag">📸</span>
-        {% endif %}
         <form method="POST" action="{{ url_for('child.child_redeem', activity_id=activity.id) }}">
             {% if activity.unit_type == 'minute' %}
             <div class="quantity-select">

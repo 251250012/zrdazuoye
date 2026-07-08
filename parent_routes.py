@@ -2,8 +2,8 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from auth import parent_required
 from models import (
     create_task, get_all_tasks, get_task_by_id, update_task, delete_task,
-    get_user_by_id, get_user_by_username, create_user, update_password,
-    update_user_grade, get_all_children
+    get_user_by_id, create_user, update_password, is_password_taken,
+    is_child_username_taken, update_user_grade, get_all_children
 )
 
 parent_bp = Blueprint('parent', __name__)
@@ -42,7 +42,7 @@ def parent_tasks():
 @parent_required
 def parent_report():
     from report_generator import generate_weekly_report
-    children = get_all_children()
+    children = get_all_children(session['user_id'])
     reports = []
     for child in children:
         report = generate_weekly_report(child['id'])
@@ -54,7 +54,7 @@ def parent_report():
 @parent_bp.route('/parent/settings', methods=['GET', 'POST'])
 @parent_required
 def parent_settings():
-    children = get_all_children()
+    children = get_all_children(session['user_id'])
 
     if request.method == 'POST':
         action = request.form.get('action')
@@ -67,8 +67,11 @@ def parent_settings():
             username = request.form['username']
             password = request.form['password']
             display_name = request.form['display_name']
-            if get_user_by_username(username):
-                flash('该用户名已注册，请换一个', 'error')
+            if is_child_username_taken(username, session['user_id']):
+                flash('你的名下已有一个相同用户名的孩子', 'error')
+                return redirect(url_for('parent.parent_settings'))
+            if is_password_taken(password):
+                flash('该密码已被其他账号使用，请换一个', 'error')
                 return redirect(url_for('parent.parent_settings'))
             grade = int(request.form.get('grade', 1))
             create_user(username, password, 'child', display_name, grade, session['user_id'])

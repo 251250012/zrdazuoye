@@ -1,6 +1,6 @@
 from functools import wraps
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-from models import verify_password, create_user, get_user_by_username, get_user_by_id
+from models import verify_password, create_user, get_user_by_username, is_password_taken
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -32,8 +32,8 @@ def setup():
         username = request.form['username']
         password = request.form['password']
         display_name = request.form.get('display_name', '家长')
-        if get_user_by_username(username):
-            flash('该用户名已注册，请换一个', 'error')
+        if is_password_taken(password):
+            flash('该密码已被其他账号使用，请换一个', 'error')
             return render_template('setup.html')
         create_user(username, password, 'parent', display_name)
         flash('管理员账号创建成功，请登录', 'success')

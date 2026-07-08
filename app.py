@@ -32,6 +32,18 @@ def create_app():
                 db.commit()
             except Exception:
                 pass
+            # 移除 username 的 UNIQUE 约束（SQLite 需要重建表）
+            try:
+                db.execute("PRAGMA foreign_keys=OFF")
+                db.execute("BEGIN TRANSACTION")
+                db.execute("CREATE TABLE user_new (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, password_hash TEXT NOT NULL, role TEXT NOT NULL CHECK(role IN ('parent', 'child')), display_name TEXT NOT NULL, grade INTEGER DEFAULT 1, parent_id INTEGER DEFAULT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)")
+                db.execute("INSERT INTO user_new SELECT * FROM user")
+                db.execute("DROP TABLE user")
+                db.execute("ALTER TABLE user_new RENAME TO user")
+                db.commit()
+                db.execute("PRAGMA foreign_keys=ON")
+            except Exception:
+                pass
 
     # 注册蓝图
     app.register_blueprint(auth_bp)

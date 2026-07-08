@@ -16,15 +16,38 @@ def get_user_by_username(username):
     db = get_db()
     return db.execute('SELECT * FROM user WHERE username = ?', (username,)).fetchone()
 
+def get_users_by_username(username):
+    """获取所有指定用户名的用户（用于支持重名登录）"""
+    db = get_db()
+    return db.execute('SELECT * FROM user WHERE username = ?', (username,)).fetchall()
+
 def get_user_by_id(user_id):
     db = get_db()
     return db.execute('SELECT * FROM user WHERE id = ?', (user_id,)).fetchone()
 
 def verify_password(username, password):
-    user = get_user_by_username(username)
-    if user and check_password_hash(user['password_hash'], password):
-        return user
+    users = get_users_by_username(username)
+    for user in users:
+        if check_password_hash(user['password_hash'], password):
+            return user
     return None
+
+def is_password_taken(password):
+    """检查密码是否已被其他账号使用"""
+    db = get_db()
+    users = db.execute('SELECT password_hash FROM user').fetchall()
+    for user in users:
+        if check_password_hash(user['password_hash'], password):
+            return True
+    return False
+
+def is_child_username_taken(username, parent_id):
+    """检查同一家长下是否有同名孩子"""
+    db = get_db()
+    return db.execute(
+        'SELECT * FROM user WHERE username = ? AND role = "child" AND parent_id = ?',
+        (username, parent_id)
+    ).fetchone() is not None
 
 def update_password(user_id, new_password):
     db = get_db()
@@ -230,8 +253,10 @@ def get_today_quiz_rounds(child_id, date):
     ).fetchall()
 
 # === 周报相关 ===
-def get_all_children():
+def get_all_children(parent_id=None):
     db = get_db()
+    if parent_id:
+        return db.execute("SELECT * FROM user WHERE role = 'child' AND parent_id = ?", (parent_id,)).fetchall()
     return db.execute("SELECT * FROM user WHERE role = 'child'").fetchall()
 
 def create_weekly_report(child_id, week_start, completion_rate, total_score, total_coins):

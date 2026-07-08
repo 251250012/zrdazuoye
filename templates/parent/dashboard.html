@@ -21,4 +21,39 @@
         </a>
     </div>
 </div>
+
+<div class="guide-section">
+    <h2 onclick="toggleGuide()" style="cursor:pointer;font-size:1.1em;color:#666;">📖 使用指南（点击展开）</h2>
+    <div id="guideContent" style="display:none;margin-top:15px;">
+        <div class="guide-card">
+            <h3>👨‍👩‍👦 快速上手</h3>
+            <ol style="line-height:2;padding-left:20px;color:#555;">
+                <li><strong>创建任务</strong> — 在「任务管理」添加孩子的日常任务（如读书、写字）</li>
+                <li><strong>创建活动</strong> — 在「活动管理」设置积分兑换奖励（如看10分钟手机）</li>
+                <li><strong>创建孩子账号</strong> — 在「设置」中创建，选择年级（影响数学题难度）</li>
+                <li><strong>孩子打卡</strong> — 孩子登录后完成任务打卡，获得盲盒积分</li>
+                <li><strong>兑换奖励</strong> — 孩子用积分在商城兑换活动</li>
+                <li><strong>养宠物</strong> — 孩子用金币购买宠物蛋，喂食养成</li>
+                <li><strong>每日答题</strong> — 孩子做数学题赚金币，每天10轮机会</li>
+            </ol>
+        </div>
+        <div class="guide-card">
+            <h3>📊 功能说明</h3>
+            <table style="width:100%;border-collapse:collapse;font-size:0.9em;">
+                <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 0;">📋 任务管理</td><td style="color:#777;">设置任务名称、基准分、波动范围</td></tr>
+                <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 0;">🎮 活动管理</td><td style="color:#777;">设置兑换活动及所需积分</td></tr>
+                <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 0;">📸 美好时刻</td><td style="color:#777;">查看孩子的兑换记录</td></tr>
+                <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 0;">📊 成长周报</td><td style="color:#777;">查看孩子每周完成率统计</td></tr>
+                <tr><td style="padding:6px 0;">⚙️ 设置</td><td style="color:#777;">修改密码、创建孩子账号、调整年级</td></tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleGuide() {
+    var el = document.getElementById('guideContent');
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+</script>
 {% endblock %}

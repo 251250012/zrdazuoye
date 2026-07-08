@@ -3,7 +3,7 @@ from auth import parent_required
 from models import (
     create_task, get_all_tasks, get_task_by_id, update_task, delete_task,
     create_activity, get_all_activities, update_activity, delete_activity,
-    get_checkins_by_child, get_user_by_id, create_user, update_password,
+    get_checkins_by_child, get_user_by_id, get_user_by_username, create_user, update_password,
     update_user_grade, get_redemptions_by_child,
     get_all_redemptions, get_all_children
 )
@@ -108,6 +108,9 @@ def parent_settings():
             username = request.form['username']
             password = request.form['password']
             display_name = request.form['display_name']
+            if get_user_by_username(username):
+                flash('该用户名已注册，请换一个', 'error')
+                return redirect(url_for('parent.parent_settings'))
             grade = int(request.form.get('grade', 1))
             create_user(username, password, 'child', display_name, grade, session['user_id'])
             flash(f'孩子账号 {display_name} 创建成功', 'success')

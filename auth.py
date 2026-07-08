@@ -32,6 +32,9 @@ def setup():
         username = request.form['username']
         password = request.form['password']
         display_name = request.form.get('display_name', '家长')
+        if get_user_by_username(username):
+            flash('该用户名已注册，请换一个', 'error')
+            return render_template('setup.html')
         create_user(username, password, 'parent', display_name)
         flash('管理员账号创建成功，请登录', 'success')
         return redirect(url_for('auth.login'))

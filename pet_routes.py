@@ -47,7 +47,7 @@ STAGE_NAMES = {'egg': '🥚 蛋', 'baby': '🐣 幼年', 'adult': '🐾 成年'}
 @login_required
 def child_pet():
     if session.get('role') != 'child':
-        return redirect(url_for('parent_dashboard'))
+        return redirect(url_for('parent.parent_dashboard'))
     child_id = session['user_id']
     pet = get_active_pet(child_id)
     coins = get_coin_balance(child_id)
@@ -58,23 +58,26 @@ def child_pet():
 @login_required
 def adopt_pet():
     child_id = session['user_id']
+    if session.get('role') != 'child':
+        flash('只有孩子才能领养宠物', 'error')
+        return redirect(url_for('pet.child_pet'))
     active = get_active_pet(child_id)
     if active:
         flash('已经有宠物了，养大后才能领新的', 'error')
-        return redirect(url_for('child_pet'))
+        return redirect(url_for('pet.child_pet'))
     all_pets = get_all_pets(child_id)
     released_count = sum(1 for p in all_pets if not p['is_alive'])
     if released_count >= 5:
         flash('已经养大 5 只宠物了，动物园满了！', 'error')
-        return redirect(url_for('child_pet'))
+        return redirect(url_for('pet.child_pet'))
     pet_type = request.form.get('pet_type')
     if pet_type not in PET_TYPES:
         flash('请选择一种宠物', 'error')
-        return redirect(url_for('child_pet'))
+        return redirect(url_for('pet.child_pet'))
     name = request.form.get('name', '宝贝')
     create_pet(child_id, pet_type, name)
     flash(f'🎉 {name}来到了你的身边！', 'success')
-    return redirect(url_for('child_pet'))
+    return redirect(url_for('pet.child_pet'))
 
 @pet_bp.route('/child/pet/interact/<action>', methods=['POST'])
 @login_required
@@ -82,20 +85,20 @@ def interact_pet(action):
     VALID_ACTIONS = ['feed', 'play', 'pet']
     if action not in VALID_ACTIONS:
         flash('无效操作', 'error')
-        return redirect(url_for('child_pet'))
+        return redirect(url_for('pet.child_pet'))
 
     child_id = session['user_id']
     pet = get_active_pet(child_id)
     if not pet:
         flash('还没有宠物，先领养一只吧', 'error')
-        return redirect(url_for('child_pet'))
+        return redirect(url_for('pet.child_pet'))
 
     coins = get_coin_balance(child_id)
     costs = {'feed': 50, 'play': 80, 'pet': 0}
 
     if action in costs and costs[action] > 0 and coins < costs[action]:
         flash('金币不够啦，多做任务赚金币吧！', 'error')
-        return redirect(url_for('child_pet'))
+        return redirect(url_for('pet.child_pet'))
 
     reaction = random.choice(PET_REACTIONS[pet['type']][action])
 
@@ -118,7 +121,7 @@ def interact_pet(action):
         flash(f'🎉 {pet["name"]}长大啦！可以放生领养新宠物了', 'success')
 
     flash(f'{pet["name"]}: {reaction}', 'success')
-    return redirect(url_for('child_pet'))
+    return redirect(url_for('pet.child_pet'))
 
 @pet_bp.route('/child/pet/release', methods=['POST'])
 @login_required
@@ -127,10 +130,10 @@ def release_pet_route():
     pet = get_active_pet(child_id)
     if not pet or pet['stage'] != 'adult':
         flash('宠物还没长大，还不能放生', 'error')
-        return redirect(url_for('child_pet'))
+        return redirect(url_for('pet.child_pet'))
     release_pet(pet['id'])
     flash(f'🌸 {pet["name"]}去远方冒险了，偶尔会回来看你的！', 'success')
-    return redirect(url_for('child_pet'))
+    return redirect(url_for('pet.child_pet'))
 
 # === 数学游戏 ===
 
@@ -221,7 +224,7 @@ def generate_math_question(grade):
 @login_required
 def math_game():
     if session.get('role') != 'child':
-        return redirect(url_for('parent_dashboard'))
+        return redirect(url_for('parent.parent_dashboard'))
     child_id = session['user_id']
     user = get_user_by_id(child_id)
     grade = user['grade'] if user else 1
